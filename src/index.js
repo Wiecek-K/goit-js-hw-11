@@ -1,20 +1,29 @@
 import { Notify } from "notiflix";
-import axios from "axios";
 import { fetchPhotos } from "./scripts/fetchPhotos";
-import { createPhotoMarkup } from "./scripts/createGallery";
+import { createPhotoMarkup } from "./scripts/createPhotoMarkup";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+
+export const PHOTOS_PER_PAGE = 40;
 
 const searchForm = document.querySelector("#search-form");
 const { searchQuery } = searchForm;
 const gallery = document.querySelector(".gallery");
-searchQuery.value = "dog";
+const btnLoadMore = document.querySelector(".load-more");
+
+let pageNum = 1;
+let currentWord = "";
+let galleryLightBox = new SimpleLightbox(".gallery a", {
+	showCounter: false,
+});
 
 searchForm.addEventListener("submit", async (e) => {
 	e.preventDefault();
-
-	const data = await fetchPhotos(searchQuery.value);
+	pageNum = 1;
+	currentWord = searchQuery.value;
+	const data = await fetchPhotos(currentWord, pageNum);
 	gallery.innerHTML = "";
+	btnLoadMore.classList.add("hidden");
 
 	if (data.hits.length === 0) {
 		Notify.failure(
@@ -26,5 +35,20 @@ searchForm.addEventListener("submit", async (e) => {
 	data.hits.forEach((photo) => {
 		gallery.insertAdjacentHTML("beforeend", createPhotoMarkup(photo));
 	});
-	let galleryLightbox = new SimpleLightbox(".gallery a");
+	galleryLightBox.refresh();
+	if (data.total > PHOTOS_PER_PAGE) {
+		btnLoadMore.classList.remove("hidden");
+	}
+});
+btnLoadMore.addEventListener("click", async () => {
+	pageNum++;
+	const data = await fetchPhotos(searchQuery.value, pageNum);
+	data.hits.forEach((photo) => {
+		gallery.insertAdjacentHTML("beforeend", createPhotoMarkup(photo));
+	});
+	galleryLightBox.refresh();
+	if (pageNum * PHOTOS_PER_PAGE >= data.total) {
+		btnLoadMore.classList.add("hidden");
+		Notify.info("We're sorry, but you've reached the end of search results.");
+	}
 });

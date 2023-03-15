@@ -7,7 +7,6 @@ export function createPhotoMarkup({
 	tags,
 	largeImageURL,
 }) {
-	console.log(tags);
 	return `
     <div class="photo-card">
         <a href=${largeImageURL}>
