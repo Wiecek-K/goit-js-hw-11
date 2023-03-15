@@ -45,7 +45,7 @@ window.addEventListener("scroll", async () => {
 	//console.log(window.innerHeight); //wysokosc okna
 	//console.log(document.documentElement.scrollHeight)//wysokosc(dlugosc)calego dokumentu
 	if (
-		window.scrollY + 1.3 * window.innerHeight >=
+		window.scrollY + 1.25 * window.innerHeight >=
 		document.documentElement.scrollHeight
 	) {
 		pageNum++;
