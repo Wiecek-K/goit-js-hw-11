@@ -21,10 +21,9 @@ searchForm.addEventListener("submit", async (e) => {
 	e.preventDefault();
 	pageNum = 1;
 	currentWord = searchQuery.value;
-	const data = await fetchPhotos(currentWord, pageNum);
+	const data = await fetchPhotos(currentWord);
 	gallery.innerHTML = "";
 	btnLoadMore.classList.add("hidden");
-
 	if (data.hits.length === 0) {
 		Notify.failure(
 			"Sorry, there are no images matching your search query. Please try again.",
@@ -40,6 +39,7 @@ searchForm.addEventListener("submit", async (e) => {
 		btnLoadMore.classList.remove("hidden");
 	}
 });
+
 btnLoadMore.addEventListener("click", async () => {
 	pageNum++;
 	const data = await fetchPhotos(searchQuery.value, pageNum);
